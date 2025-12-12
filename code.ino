@@ -178,7 +178,25 @@ void displayTwoLineMessage(const char* msg) {
   lcd.print(bottomLine);
 }
 
+void doorCloseSound() {
+  tone(buzzer, 1500, 100);
+  delay(120);
+  tone(buzzer, 900, 150);
+  delay(150);
+  tone(buzzer, 400, 200);
+  delay(200);
+  noTone(buzzer);
+}
 
+void doorOpenSound() {
+  tone(buzzer, 600, 80);
+  delay(100);
+  tone(buzzer, 1200, 120);
+  delay(120);
+  tone(buzzer, 2000, 150);
+  delay(150);
+  noTone(buzzer);
+}
 
 
 // ---------------- Setup ----------------
@@ -288,7 +306,7 @@ void loop() {
           doorOpen = false;
           displayTwoLineMessage(randomGoodbye());
           setColor(255,0,0);
-          beep(2000,500);
+          doorCloseSound();
         } else {
           Serial.println("Opening door...");
           for(int i=0;i<3;i++){ setColor(0,255,0); delay(200); setColor(0,0,0); delay(200);}
@@ -296,7 +314,7 @@ void loop() {
           doorOpen = true;
           displayTwoLineMessage(randomHello());
           setColor(0,255,0);
-          beep(1500,500);
+          doorOpenSound();
         }
         lastMessageTime = millis();
         messageActive = true;
