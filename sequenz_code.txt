@@ -1,0 +1,59 @@
+sequenceDiagram
+    participant User as Benutzer
+    participant RFID as RFID-Reader
+    participant Arduino as Arduino-System
+    participant LCD as LCD-Display
+    participant LED as LED-Anzeige
+    participant Motor as Schrittmotor
+    participant Buzzer as Buzzer
+
+    User->>RFID: Hält RFID-Karte vor
+    RFID-->>Arduino: RFID-ID senden
+
+    alt Karte registriert
+        Arduino->>Arduino: Türstatus prüfen
+
+        alt Tür ist geöffnet (soll schließen)
+            Arduino->>LED: Rote LED blinkt
+            Arduino->>Motor: Schloss schließen
+            Arduino->>LCD: Zeige „Auf Wiedersehen“-Nachricht (Zufall aus 10)
+            Arduino->>LED: Rote LED dauerhaft an
+            Arduino->>Buzzer: Kurzes tiefes Signal
+        else Tür ist geschlossen (soll öffnen)
+            Arduino->>LED: Rote LED blinkt
+            Arduino->>Motor: Schloss öffnen
+            Arduino->>LCD: Zeige „Hallo“-Nachricht (Zufall aus 10)
+            Arduino->>LED: Grüne LED dauerhaft an
+            Arduino->>Buzzer: Kurzes freundliches Signal
+        end
+
+    else Karte nicht registriert
+        Arduino->>LED: Rote LED blinkt 3×
+        Arduino->>Buzzer: Fehlerton
+        Arduino->>LCD: „Karte nicht registriert“
+    end
+
+    %% Registrieren
+    User->>Arduino: Drückt „Register“-Knopf
+    Arduino->>LCD: „Registriermodus aktiv“
+    User->>RFID: Neue Karte vorhalten
+    RFID-->>Arduino: RFID-ID senden
+    Arduino->>Arduino: Karte speichern
+    Arduino->>LCD: „Karte hinzugefügt“
+    Arduino->>Buzzer: Bestätigungston
+
+
+    %% Unregistrieren
+    User->>Arduino: Drückt „Unregister“-Knopf
+    Arduino->>LCD: „Löschmodus aktiv“
+    User->>RFID: Karte zum Entfernen vorhalten
+    RFID-->>Arduino: RFID-ID senden
+    alt Karte existiert
+        Arduino->>Arduino: Karte aus Speicher löschen
+        Arduino->>LCD: „Karte entfernt“
+        Arduino->>Buzzer: Doppelt-Bestätigungston
+    else Karte existiert nicht
+        Arduino->>LCD: „Karte nicht gefunden“
+        Arduino->>Buzzer: Fehlerton
+    end
+
